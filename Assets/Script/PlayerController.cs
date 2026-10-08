@@ -38,7 +38,10 @@ public class PlayerController : FallingObject
 
         if (Input.GetKeyDown(KeyCode.K))
         {
-            Bubble bubbleInstance = Instantiate(_bubblePrefab, transform.position, Quaternion.identity);
+            Vector3 pos = transform.position;
+            pos.y += 1;
+            
+            Bubble bubbleInstance = Instantiate(_bubblePrefab, pos, Quaternion.identity);
             if (_facingLeft) bubbleInstance.FlipMomentum();
         }
 
@@ -92,17 +95,6 @@ public class PlayerController : FallingObject
         _shouldKillThisFrame = false;
         _landedOnEnemyThisFrame = false;
     }
-
-    public void EnemyKillCheck(float amount, GameObject enemy, int score)
-    {
-        if (_velocity.y < 0f)
-        {
-            _velocity.y = amount;
-            Destroy(enemy.gameObject);
-            _landedOnEnemyThisFrame = true;
-        }
-    }
-
     public void PlayerKillCheck(float bottomPoint)
     {
         if (_velocity.y >= 0f || transform.position.y < bottomPoint)
