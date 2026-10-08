@@ -3,36 +3,30 @@ using System.Globalization;
 using TMPro;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : FallingObject
 {
     [SerializeField] private float _maxMoveSpeed = 9;
     [SerializeField] private float _moveIncreaseSpeed = 25;
     [SerializeField] private float _jumpImpulse = 8;
-    [SerializeField] private float _gravityRateUp = 20;
-    [SerializeField] private float _gravityRateDown = 30;
     [SerializeField] private float _horiDrag = 35;
     [SerializeField] private float _quickTurnSped = 70;
-    [SerializeField] private float _floorDistance = 1f;
     [SerializeField] private int _maxJumpCount = 1;
-    [SerializeField] private Vector2 _velocity = Vector2.zero;
     [Space]
     [SerializeField] private Bubble _bubblePrefab;
 
     private bool _facingLeft;
-    private LayerMask _layerMask;
     private int _currentJumps;
     private SpriteRenderer _spriteRenderer;
 
     private bool _shouldKillThisFrame;
     private bool _landedOnEnemyThisFrame;
     
-    private void Awake()
+    private void Start()
     {
-        _layerMask = LayerMask.GetMask("Floor");
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
     }
     
-    private void Update()
+    private new void Update()
     {
         if (Input.GetButtonDown("Jump") && _currentJumps < _maxJumpCount)
         {
@@ -42,21 +36,12 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.K))
         {
-            Vector3 pos = transform.position;
-            pos.x += _facingLeft ? -1 : 1;
-            pos.y += 1;
-            
-            Bubble bubbleInstance = Instantiate(_bubblePrefab, pos, Quaternion.identity);
+            Bubble bubbleInstance = Instantiate(_bubblePrefab, transform.position, Quaternion.identity);
+            if (_facingLeft) bubbleInstance.FlipMomentum();
         }
 
         float moveX = Input.GetAxis("Horizontal");
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, transform.TransformDirection(Vector2.down), _floorDistance, _layerMask);
-
-        if (!hit)
-        {
-            if (_velocity.y > 0) _velocity.y -= _gravityRateUp * Time.deltaTime;
-            else _velocity.y -= _gravityRateDown * Time.deltaTime;
-        }
+        base.Update();
 
         _velocity.x += _moveIncreaseSpeed * moveX * Time.deltaTime;
 
@@ -91,12 +76,12 @@ public class PlayerController : MonoBehaviour
             _velocity.y = 0;
             transform.position = new Vector3(transform.position.x, hit.collider.transform.position.y + hit.collider.bounds.extents.y, transform.position.z);
         }
-        
-        transform.position = (Vector2) transform.position + (_velocity * Time.deltaTime);
     }
 
-    private void LateUpdate()
+    private new void LateUpdate()
     {
+        base.LateUpdate();
+        
         if (_shouldKillThisFrame && !_landedOnEnemyThisFrame)
         {
             Destroy(gameObject);
