@@ -30,7 +30,8 @@ public class EnemySpawner : MonoBehaviour
             spawnPos.y += offsetY;
 
             int enemyIndex = Random.Range(0, 100);
-            Instantiate(_enemyPrefabs[enemyIndex % _enemyPrefabs.Length], spawnPos, Quaternion.identity);
+            EnemyController obj = Instantiate(_enemyPrefabs[enemyIndex % _enemyPrefabs.Length], spawnPos, Quaternion.identity);
+            obj.gameObject.SetActive(true);
         }
     }
 }
