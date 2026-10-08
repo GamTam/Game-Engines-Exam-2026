@@ -1,17 +1,14 @@
 using System;
 using UnityEngine;
 
-public class EnemyController : FallingObject
+public class EnemyController : MonoBehaviour
 {
-    new void Update()
-    {
-        base.Update();
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
+   private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Bubble"))
         {
+            GameManager.Instance.EnemiesKilled += 1;
+            
             Destroy(other.gameObject);
             Destroy(gameObject);
         }

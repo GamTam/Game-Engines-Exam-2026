@@ -28,6 +28,8 @@ public class PlayerController : FallingObject
     
     private new void Update()
     {
+        GameManager.Instance.TimePassed += Time.deltaTime;
+        
         if (Input.GetButtonDown("Jump") && _currentJumps < _maxJumpCount)
         {
             _currentJumps += 1;
